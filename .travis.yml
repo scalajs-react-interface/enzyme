@@ -1,0 +1,40 @@
+language: scala
+
+scala:
+- 2.12.1
+- 2.11.8
+
+jdk:
+- oraclejdk8
+
+install:
+  - . $HOME/.nvm/nvm.sh
+  - nvm install stable
+  - nvm use stable
+  - npm install
+
+env:
+  global:
+    JSENV=node
+
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION test:fastOptJS test:fullOptJS
+  - sbt ++$TRAVIS_SCALA_VERSION 'set parallelExecution in ThisBuild := false' test
+  - sbt ++$TRAVIS_SCALA_VERSION 'set parallelExecution in ThisBuild := false' 'set scalaJSStage in ThisBuild := FullOptStage' test
+
+
+deploy:
+  provider: script
+  script:
+  - /bin/bash "$TRAVIS_BUILD_DIR/.travis.credentials.sh" && sbt ++$TRAVIS_SCALA_VERSION publish
+  on:
+    tags: true
+
+env:
+  global:
+  # travis encrypt BINTRAY_USER=xxx
+  - secure: "nFwaqXrp7vf7z7A7ZGQ7Y9Kp79zzh5/g3RMbPgnp9ogHMz2waU5yKRstEfSItHikCimaXCW5DV9cSnsTVHOUb9TIWHJgM91tF3yrMsz26Dymw8eTVyf3vShTqyS7B4P8fpnCD3yYocj8Sr7BGXSBJMbJw3TaZgBqyWoQ8xPtsWPR56jIQyLx0zkkwRk7/XvRYG0rNY1GfYdUMOWNlaQLPZygGZtNECVxKC68v37/MFlDXZxDxBO7dIQZEQSwyeo8Tb5jkG0H4jxaUU6HLBeSFRvEwMQmpbiI0S96N0p17f2ZBwucGZdog0YNRDOvTFQtSwMGovyXvHwRWKdiWaWTZGXgNmGsrxcpY3ET1l/m9ac2xUknl14oHZ7/2FLr9sjBL47SNtEo5J7QUKcQriiQNksMmZKa9FpDM9cXxvAfLDvmooIdqWFVxnaai0Zs9MF+iwFkwA9NKoJDAkqu70dvr5jVRFUJNsqP9XhnZlhLwOWNvS1UJFAwEcnEbQQRkZPVL0pZ+BK8ko35Qulhhgnwcls9d+nfZVbS7yzPneoTLf63CoJZCeQsRmUJjh4wxh+oV0eL0ah00+nEhGXxVLHWU05CYZB+tzBwG6ACkehVwuLoOo2SfX5KOWaZo9ox5MlNhM4NLSNkiiNAYNGkr2XR2kpaoBjc50JOmZ+GyJS2UV8="
+  # travis encrypt BINTRAY_PASSWORD=xxx
+  - secure: "Zw8mBQKzKCPHuUXrkMRX7ag3JMl1uM9FcRCCyc01mo/BOBo0p4LHI7OQq/aP8jNeF5vwnGuCJia5++9wwykbRr9/Z0thmZ/PXSizyV39RhwyxbC0ATT9u0GX8T1nQRieXJH+glA8hVX0vusQuBdLAhjDuCcGEJHMng9xMrTYd8bP246OP5+7fng+sBBYEXTKR2FOPQYGc09JVaJ+eSjhRQ01NK5Puvw9rd6Leng2DHOMlXHRwLPnECdSU9Pl2eoTquVEsDqQI7ncfT6mzOmbzh8qn3JqEk5kHaOXt9GI2BHDEduCQ1tLCQUKe5geKV/RWO91yWxrAn1zAVZRdeH42KO1X3qd35965Q2PpdLRQ1OVkzHMDBRakaCyK/Fx13WKAAMiH7t1QaEz8Zaxr8XmZDtvu2cTSqh0GjwmqYMuZCpSClmdkpfme5rozsRDgSy2e5ybg4v+SI2oggyP2pJiw6Dyu5vz22MIcuSjhAh8AZoXB8b5yIYpJ/WNbt5ihJqDZc+CR/+ek4OWgGhRKgiNNY5VSveCOPqJPjXlft4R88gnluPALAggAIOA/XoRitoSUfo8seydyO/y5t9pkPPnsA1MnuB/cMs845X/MzOr4m89NI8Zk+GMbptLLQzB0LbjK50q8dc6lW5Gpfgv+tSEyfTAcXYYLC2f5RzwwEi8C/8="
+
+
